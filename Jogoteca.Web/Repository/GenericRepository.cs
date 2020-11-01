@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
+using Jogoteca.DbContexts;
 using Jogoteca.Models;
 
 namespace Jogoteca.Repository
