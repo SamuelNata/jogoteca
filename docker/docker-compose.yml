@@ -1,0 +1,20 @@
+version: '3'
+services:
+    db:
+        # build:
+        #     context: .
+        #     dockerfile: postgresql/Dockerfile
+        container_name: jogoteca_db
+        image: postgres:11.9-alpine
+        environment:
+            POSTGRES_PASSWORD: jogoteca-db-pw
+            POSTGRES_USER: jogoteca-db-user
+            POSTGRES_DB: jogoteca
+        volumes:
+            - jogoteca-db-data:/var/lib/postgresql/data
+            - ${PWD}/postgresql/postgresql.conf:/etc/postgresql.conf
+        ports:
+            - "5555:5432"
+        command: postgres
+volumes:
+    jogoteca-db-data:
