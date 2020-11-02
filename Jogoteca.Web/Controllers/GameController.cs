@@ -12,8 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Jogoteca.Web.Controllers
 {
-    [Authorize]
-    public class GameController : Controller
+    public class GameController : BaseController
     {
         private readonly IGameService _gameService;
 

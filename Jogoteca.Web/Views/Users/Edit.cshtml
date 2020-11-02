@@ -1,12 +1,10 @@
 @model Jogoteca.Models.Entities.User
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Editar amigo";
 }
 
-<h1>Edit</h1>
-
-<h4>User</h4>
+<h1>Editar usuário</h1>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -19,18 +17,18 @@
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                <input asp-for="Email" class="form-control" disabled/>
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Salvar" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Voltar para lista de amigos</a>
 </div>
 

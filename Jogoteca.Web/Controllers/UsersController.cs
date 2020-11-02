@@ -1,28 +1,33 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
+using Jogoteca.Service.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace Jogoteca.Web.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly JogotecaDbContext _context;
+        
+        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public UsersController(JogotecaDbContext context)
+        public UsersController(
+            UserManager<User> userManager,
+            IUserService userService)
         {
-            _context = context;
+            _userManager = userManager;
+            _userService = userService;
         }
 
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Users.ToListAsync());
+            return View(await _userService.GetAll());
         }
 
         // GET: Users/Details/5
@@ -33,8 +38,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _userService.GetById(id.Value);
             if (user == null)
             {
                 return NotFound();
@@ -50,17 +54,16 @@ namespace Jogoteca.Web.Controllers
         }
 
         // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Email,Id")] User user)
+        public async Task<IActionResult> Create([Bind("Name,Id")] User user)
         {
             if (ModelState.IsValid)
             {
                 user.Id = Guid.NewGuid();
-                _context.Add(user);
-                await _context.SaveChangesAsync();
+                user.UserName = user.Email;
+                var result = await _userManager.CreateAsync(user, "altere_essa_senha");
+                TempData["successMessage"] = "Agora seu amigo pode acessar o sistema usando email e a senha 'altere_essa_senha'";
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
@@ -74,7 +77,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _userService.GetById(id.Value);
             if (user == null)
             {
                 return NotFound();
@@ -83,8 +86,6 @@ namespace Jogoteca.Web.Controllers
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("Name,Email,Id")] User user)
@@ -98,12 +99,14 @@ namespace Jogoteca.Web.Controllers
             {
                 try
                 {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
+                    var dbUser = await _userService.GetById(id);
+                    dbUser.Email = user.Email;
+                    dbUser.Name = user.Name;
+                    await _userService.Update(dbUser);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!UserExists(user.Id))
+                    if (!await UserExists(user.Id))
                     {
                         return NotFound();
                     }
@@ -117,38 +120,10 @@ namespace Jogoteca.Web.Controllers
             return View(user);
         }
 
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        private async Task<bool> UserExists(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var user = await _context.Users.FindAsync(id);
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(Guid id)
-        {
-            return _context.Users.Any(e => e.Id == id);
+            var user = await _userService.GetById(id);
+            return user != null;
         }
     }
 }

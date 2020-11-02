@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
 using Jogoteca.Service.Interfaces;
-using Jogoteca.Web.Models.ViewModels;
 using Jogoteca.Models.ViewModels;
 
 namespace Jogoteca.Web.Controllers
