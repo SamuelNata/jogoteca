@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Jogoteca.Web.Migrations
 {
-    [DbContext(typeof(DefaultDbContext))]
+    [DbContext(typeof(JogotecaDbContext))]
     [Migration("20201101081323_InitialMigrations")]
     partial class InitialMigrations
     {

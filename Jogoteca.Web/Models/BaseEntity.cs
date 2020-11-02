@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Jogoteca.Web.Models;
 
 namespace Jogoteca.Models
 {
-    public abstract class BaseEntity
+    public abstract class BaseEntity : IBaseEntity
     {
         [Key]
         public Guid Id { get; set; }

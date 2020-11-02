@@ -12,9 +12,9 @@ namespace Jogoteca.Web.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly DefaultDbContext _context;
+        private readonly JogotecaDbContext _context;
 
-        public UsersController(DefaultDbContext context)
+        public UsersController(JogotecaDbContext context)
         {
             _context = context;
         }

@@ -12,9 +12,9 @@ namespace Jogoteca.Web.Controllers
 {
     public class BorrowingController : Controller
     {
-        private readonly DefaultDbContext _context;
+        private readonly JogotecaDbContext _context;
 
-        public BorrowingController(DefaultDbContext context)
+        public BorrowingController(JogotecaDbContext context)
         {
             _context = context;
         }

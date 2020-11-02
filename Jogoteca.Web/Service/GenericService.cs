@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Jogoteca.Models;
 using Jogoteca.Repository;
+using Jogoteca.Web.Models;
 
 namespace Jogoteca.Service
 {
-        
     public abstract class GenericService<TRespository, TEntity> : IGenericService<TEntity>
-        where TEntity : BaseEntity
+        where TEntity : class, IBaseEntity
         where TRespository : IGenericRepository<TEntity>
     {
         protected internal TRespository Repository { get; set; }
@@ -33,7 +33,7 @@ namespace Jogoteca.Service
             return Repository.Update(obj);
         }
 
-        public virtual ValueTask<TEntity> GetById(long id)
+        public virtual ValueTask<TEntity> GetById(Guid id)
         {
             return Repository.GetById(id);
         }
@@ -48,7 +48,7 @@ namespace Jogoteca.Service
             return Repository.Remove(obj);
         }
 
-        public async Task<TEntity> FindByIdOrFail(long id)
+        public async Task<TEntity> FindByIdOrFail(Guid id)
         {
             var model = await GetById(id);
 
