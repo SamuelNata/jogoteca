@@ -1,6 +1,6 @@
 using System;
 
-namespace Jogoteca.Model.Exceptions
+namespace Jogoteca.Models.Exceptions
 {
     public class UserFriendlyException : Exception
     {

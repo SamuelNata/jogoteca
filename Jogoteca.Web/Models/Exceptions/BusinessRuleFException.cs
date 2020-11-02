@@ -1,4 +1,4 @@
-namespace Jogoteca.Model.Exceptions
+namespace Jogoteca.Models.Exceptions
 {
     public class BusinessRuleFException : UserFriendlyException
     {
