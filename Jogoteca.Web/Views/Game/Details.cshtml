@@ -1,13 +1,13 @@
 @model Jogoteca.Models.Entities.Game
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detalhes do Jogo";
 }
 
-<h1>Details</h1>
+<h1>Detalhes do jogo</h1>
 
 <div>
-    <h4>Game</h4>
+    <h4>@Model.Name</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -25,6 +25,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Editar este jogo</a> |
+    <a asp-action="Index">Voltar</a>
 </div>
