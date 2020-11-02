@@ -1,0 +1,9 @@
+namespace Jogoteca.Model.Exceptions
+{
+    public class BusinessRuleFException : UserFriendlyException
+    {
+        public BusinessRuleFException(string message) : base(message){
+
+        }
+    }
+}
