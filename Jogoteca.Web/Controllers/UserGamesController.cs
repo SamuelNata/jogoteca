@@ -7,22 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
+using Jogoteca.Service.Interfaces;
 
 namespace Jogoteca.Web.Controllers
 {
     public class UserGamesController : Controller
     {
-        private readonly DefaultDbContext _context;
+        private readonly JogotecaDbContext _context;
+        private readonly IUserGameService _userGameService;
 
-        public UserGamesController(DefaultDbContext context)
+        public UserGamesController(JogotecaDbContext context, IUserGameService userGameService)
         {
             _context = context;
+            _userGameService = userGameService;
         }
 
         // GET: UserGames
         public async Task<IActionResult> Index()
         {
-            return View(await _context.UserGames.ToListAsync());
+            return View(await _userGameService.GetAll());
         }
 
         // GET: UserGames/Details/5
@@ -33,8 +36,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var userGame = await _context.UserGames
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var userGame = await _userGameService.GetById(id.Value);
             if (userGame == null)
             {
                 return NotFound();
@@ -59,8 +61,7 @@ namespace Jogoteca.Web.Controllers
             if (ModelState.IsValid)
             {
                 userGame.Id = Guid.NewGuid();
-                _context.Add(userGame);
-                await _context.SaveChangesAsync();
+                await _userGameService.Save(userGame);
                 return RedirectToAction(nameof(Index));
             }
             return View(userGame);
@@ -74,7 +75,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var userGame = await _context.UserGames.FindAsync(id);
+            var userGame = await _userGameService.GetById(id.Value);
             if (userGame == null)
             {
                 return NotFound();
@@ -98,12 +99,11 @@ namespace Jogoteca.Web.Controllers
             {
                 try
                 {
-                    _context.Update(userGame);
-                    await _context.SaveChangesAsync();
+                    await _userGameService.Update(userGame);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserGameExists(userGame.Id))
+                    if (!await UserGameExists(userGame.Id))
                     {
                         return NotFound();
                     }
@@ -125,8 +125,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var userGame = await _context.UserGames
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var userGame = await _userGameService.GetById(id.Value);
             if (userGame == null)
             {
                 return NotFound();
@@ -140,15 +139,15 @@ namespace Jogoteca.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userGame = await _context.UserGames.FindAsync(id);
-            _context.UserGames.Remove(userGame);
-            await _context.SaveChangesAsync();
+            var userGame = await _userGameService.GetById(id);
+            await _userGameService.Remove(userGame);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UserGameExists(Guid id)
+        private async Task<bool> UserGameExists(Guid id)
         {
-            return _context.UserGames.Any(e => e.Id == id);
+            var userGame = await _userGameService.GetById(id);
+            return userGame != null;
         }
     }
 }

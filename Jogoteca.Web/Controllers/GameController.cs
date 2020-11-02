@@ -7,34 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
+using Jogoteca.Service.Interfaces;
 
 namespace Jogoteca.Web.Controllers
 {
     public class GameController : Controller
     {
-        private readonly DefaultDbContext _context;
+        private readonly IGameService _gameService;
+        private readonly JogotecaDbContext _context;
 
-        public GameController(DefaultDbContext context)
+        public GameController(JogotecaDbContext context, IGameService gameService)
         {
             _context = context;
+            _gameService = gameService;
         }
 
         // GET: Game
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Games.ToListAsync());
+            return View(await _gameService.GetAll());
         }
 
         // GET: Game/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _gameService.GetById(id.Value);
             if (game == null)
             {
                 return NotFound();
@@ -69,7 +71,7 @@ namespace Jogoteca.Web.Controllers
         // GET: Game/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return NotFound();
             }
@@ -87,7 +89,7 @@ namespace Jogoteca.Web.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Year,Id")] Game game)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Year")] Game game)
         {
             if (id != game.Id)
             {
@@ -125,8 +127,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _gameService.GetById(id.Value);
             if (game == null)
             {
                 return NotFound();

@@ -5,9 +5,9 @@ using Jogoteca.DbContexts;
 
 namespace Jogoteca.Web.Repository.Implementations
 {
-    public class GameRepository : GenericRepository<Game, JogotecaDbContext>, IGameRepository
+    public class UserGameRepository : GenericRepository<UserGame, JogotecaDbContext>, IUserGameRepository
     {
-        public GameRepository(JogotecaDbContext context) : base(context) {
+        public UserGameRepository(JogotecaDbContext context) : base(context) {
 
         }
     }

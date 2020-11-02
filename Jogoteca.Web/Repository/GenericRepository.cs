@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using System;
 using Jogoteca.DbContexts;
 using Jogoteca.Models;
+using Jogoteca.Web.Models;
 
 namespace Jogoteca.Repository
 {
     public abstract class GenericRepository<TEntity, TContext> : IGenericRepository<TEntity>
-        where TEntity : BaseEntity
+        where TEntity : class, IBaseEntity
         where TContext : BaseDbContext
     {
         protected readonly TContext Context;
@@ -23,7 +24,7 @@ namespace Jogoteca.Repository
             return Context.Set<TEntity>().ToListAsync();
         }
 
-        public virtual ValueTask<TEntity> GetById(long id)
+        public virtual ValueTask<TEntity> GetById(Guid id)
         {
             return Context.FindAsync<TEntity>(id);
         }
