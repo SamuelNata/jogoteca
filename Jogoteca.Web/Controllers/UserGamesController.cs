@@ -1,120 +1,76 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
 using Jogoteca.Service.Interfaces;
+using Jogoteca.Models.ViewModels;
 
 namespace Jogoteca.Web.Controllers
 {
-    public class UserGamesController : Controller
+    public class UserGamesController : BaseController
     {
-        private readonly JogotecaDbContext _context;
         private readonly IUserGameService _userGameService;
+        private readonly IGameService _gameService;
 
-        public UserGamesController(JogotecaDbContext context, IUserGameService userGameService)
+        public UserGamesController(
+            IUserGameService userGameService,
+            IGameService gameService)
         {
-            _context = context;
             _userGameService = userGameService;
+            _gameService = gameService;
         }
 
         // GET: UserGames
         public async Task<IActionResult> Index()
         {
-            return View(await _userGameService.GetAll());
+            return View("MyGames", await _userGameService.SearshGamesByUser(new Guid(CurrentUserId)));
         }
 
         // GET: UserGames/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        // public async Task<IActionResult> Details(Guid? id)
+        // {
+        //     if (id == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            var userGame = await _userGameService.GetById(id.Value);
-            if (userGame == null)
-            {
-                return NotFound();
-            }
+        //     var userGame = await _userGameService.GetById(id.Value);
+        //     if (userGame == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            return View(userGame);
-        }
+        //     return View(userGame);
+        // }
 
         // GET: UserGames/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var allGames = await _gameService.GetAll();
+            ViewBag.gamesList = allGames.Select(g => new SelectListItem{
+                Text = $"{g.Name} - {g.Year}",
+                Value = g.Id.ToString()
+            }).ToList();
             return View();
         }
 
         // POST: UserGames/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id")] UserGame userGame)
+        public async Task<IActionResult> Create(CreateUserGameVM model)
         {
             if (ModelState.IsValid)
             {
-                userGame.Id = Guid.NewGuid();
+                var userGame = new UserGame {
+                    UserId = new Guid(CurrentUserId),
+                    GameId = model.GameId
+                };
                 await _userGameService.Save(userGame);
                 return RedirectToAction(nameof(Index));
             }
-            return View(userGame);
-        }
-
-        // GET: UserGames/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var userGame = await _userGameService.GetById(id.Value);
-            if (userGame == null)
-            {
-                return NotFound();
-            }
-            return View(userGame);
-        }
-
-        // POST: UserGames/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id")] UserGame userGame)
-        {
-            if (id != userGame.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _userGameService.Update(userGame);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await UserGameExists(userGame.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(userGame);
+            return View(model);
         }
 
         // GET: UserGames/Delete/5
@@ -125,13 +81,13 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var userGame = await _userGameService.GetById(id.Value);
-            if (userGame == null)
+            var userGames = await _userGameService.SearchByGameAndOwner(new Guid(CurrentUserId), id.Value);
+            if (!userGames.Any())
             {
                 return NotFound();
             }
 
-            return View(userGame);
+            return View(userGames.First());
         }
 
         // POST: UserGames/Delete/5
@@ -139,15 +95,8 @@ namespace Jogoteca.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var userGame = await _userGameService.GetById(id);
-            await _userGameService.Remove(userGame);
+            var result = await _userGameService.RemoveGameFromUser(id, new Guid(CurrentUserId));
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<bool> UserGameExists(Guid id)
-        {
-            var userGame = await _userGameService.GetById(id);
-            return userGame != null;
         }
     }
 }

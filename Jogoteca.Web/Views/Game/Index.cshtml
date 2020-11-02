@@ -1,13 +1,13 @@
 @model IEnumerable<Jogoteca.Models.Entities.Game>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Jogos";
 }
 
 <h1>Jogos</h1>
 
 <p>
-    <a asp-action="Create">Criar Jogo</a>
+    <a asp-action="Create">Adicionar Jogo</a>
 </p>
 <table class="table">
     <thead>
@@ -22,20 +22,19 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Year)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model) {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Year)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalhes</a>
+                    </td>
+                </tr>
+        }
     </tbody>
 </table>

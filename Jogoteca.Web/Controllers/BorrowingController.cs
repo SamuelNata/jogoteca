@@ -1,154 +1,118 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
+using Jogoteca.Service.Interfaces;
+using Jogoteca.Models.ViewModels;
+using Jogoteca.Models.Exceptions;
 
 namespace Jogoteca.Web.Controllers
 {
-    public class BorrowingController : Controller
+    public class BorrowingController : BaseController
     {
-        private readonly JogotecaDbContext _context;
+        private readonly IGameBorrowingService _gameBorrowingService;
+        private readonly IUserGameService _userGameService;
+        private readonly IUserService _userService;
 
-        public BorrowingController(JogotecaDbContext context)
+        public BorrowingController(
+            IGameBorrowingService gameBorrowingService,
+            IUserGameService userGameService,
+            IUserService userService)
         {
-            _context = context;
+            _gameBorrowingService = gameBorrowingService;
+            _userGameService = userGameService;
+            _userService = userService;
         }
 
         // GET: Borrowing
         public async Task<IActionResult> Index()
         {
-            return View(await _context.GameBorrowings.ToListAsync());
-        }
-
-        // GET: Borrowing/Details/5
-        public async Task<IActionResult> Details(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var gameBorrowing = await _context.GameBorrowings
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (gameBorrowing == null)
-            {
-                return NotFound();
-            }
-
-            return View(gameBorrowing);
+            return View(await _gameBorrowingService.GetHistoryBorrowedByOwner(new Guid(CurrentUserId)));
         }
 
         // GET: Borrowing/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(Guid? gameId)
         {
+            await AddGamesListToViewData();
+            await AddUsersListToViewData();
             return View();
         }
 
         // POST: Borrowing/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StartDate,PredictedEndDate,RealEndDate,Id")] GameBorrowing gameBorrowing)
+        public async Task<IActionResult> Create(BorrowGameVM model)
         {
             if (ModelState.IsValid)
             {
-                gameBorrowing.Id = Guid.NewGuid();
-                _context.Add(gameBorrowing);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var result = await _gameBorrowingService.BorrowGame(
+                    model.GameOwnershipId.Value,
+                    model.UserGetingBorrowedId,
+                    model.PredictedDevolution
+                );
+                if(result > 0){
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            return View(gameBorrowing);
+
+            await AddGamesListToViewData();
+            await AddUsersListToViewData();
+            return View(model);
         }
 
-        // GET: Borrowing/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var gameBorrowing = await _context.GameBorrowings.FindAsync(id);
-            if (gameBorrowing == null)
-            {
-                return NotFound();
-            }
-            return View(gameBorrowing);
-        }
-
-        // POST: Borrowing/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("StartDate,PredictedEndDate,RealEndDate,Id")] GameBorrowing gameBorrowing)
+        public async Task<JsonResult> MarkAsReturned(Guid id)
         {
-            if (id != gameBorrowing.Id)
+            try
             {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(gameBorrowing);
-                    await _context.SaveChangesAsync();
+                var result = await _gameBorrowingService.MarkAsReturned(id);
+                if(result > 0){
+                    return Json(new { success = true, message = "Jogo devolvido" });
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!GameBorrowingExists(gameBorrowing.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return Json(new { success = false, message = "Não foi possível devolver o jogo" });
                 }
-                return RedirectToAction(nameof(Index));
             }
-            return View(gameBorrowing);
-        }
-
-        // GET: Borrowing/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
+            catch(UserFriendlyException e)
             {
-                return NotFound();
+                return Json(new { success = false, message = e.Message });
             }
-
-            var gameBorrowing = await _context.GameBorrowings
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (gameBorrowing == null)
+            catch(Exception e)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Não foi possível devolver o jogo" });
             }
-
-            return View(gameBorrowing);
+            
         }
 
-        // POST: Borrowing/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        private async Task<bool> GameBorrowingExists(Guid id)
         {
-            var gameBorrowing = await _context.GameBorrowings.FindAsync(id);
-            _context.GameBorrowings.Remove(gameBorrowing);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var result = await _gameBorrowingService.GetById(id);
+            return result == null;
         }
 
-        private bool GameBorrowingExists(Guid id)
-        {
-            return _context.GameBorrowings.Any(e => e.Id == id);
+        private async Task AddGamesListToViewData(Guid? gameId = null){
+            var borrowableGames = await _userGameService.SearchByGameAndOwner(new Guid(CurrentUserId), gameId, true);
+            ViewBag.gamesList = borrowableGames.Select(go => new SelectListItem()
+                {
+                    Text = $"{go.Game.Name} {go.Game.Year} ({go.User.Name})",
+                    Value = go.Id.ToString()
+                }
+            ).ToList();
+        }
+
+        private async Task AddUsersListToViewData(){
+            var allUsers = await _userService.GetAll();
+            var curentUserId = new Guid(CurrentUserId);
+            ViewBag.Users = allUsers.Where(u => u.Id != curentUserId).Select(u => new SelectListItem()
+                {
+                    Text = u.Name,
+                    Value = u.Id.ToString()
+                }
+            ).ToList();
         }
     }
 }

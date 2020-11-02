@@ -8,17 +8,16 @@ using Microsoft.EntityFrameworkCore;
 using Jogoteca.DbContexts;
 using Jogoteca.Models.Entities;
 using Jogoteca.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Jogoteca.Web.Controllers
 {
-    public class GameController : Controller
+    public class GameController : BaseController
     {
         private readonly IGameService _gameService;
-        private readonly JogotecaDbContext _context;
 
         public GameController(JogotecaDbContext context, IGameService gameService)
         {
-            _context = context;
             _gameService = gameService;
         }
 
@@ -61,8 +60,7 @@ namespace Jogoteca.Web.Controllers
             if (ModelState.IsValid)
             {
                 game.Id = Guid.NewGuid();
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                await _gameService.Save((Game)game.WithId());
                 return RedirectToAction(nameof(Index));
             }
             return View(game);
@@ -76,7 +74,7 @@ namespace Jogoteca.Web.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Games.FindAsync(id);
+            var game = await _gameService.GetById(id.Value);
             if (game == null)
             {
                 return NotFound();
@@ -85,11 +83,9 @@ namespace Jogoteca.Web.Controllers
         }
 
         // POST: Game/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Year")] Game game)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Year,Id")] Game game)
         {
             if (id != game.Id)
             {
@@ -100,12 +96,11 @@ namespace Jogoteca.Web.Controllers
             {
                 try
                 {
-                    _context.Update(game);
-                    await _context.SaveChangesAsync();
+                    await _gameService.Update(game);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!GameExists(game.Id))
+                    if (!await GameExists(game.Id))
                     {
                         return NotFound();
                     }
@@ -119,37 +114,9 @@ namespace Jogoteca.Web.Controllers
             return View(game);
         }
 
-        // GET: Game/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        private async Task<bool> GameExists(Guid id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var game = await _gameService.GetById(id.Value);
-            if (game == null)
-            {
-                return NotFound();
-            }
-
-            return View(game);
-        }
-
-        // POST: Game/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            var game = await _context.Games.FindAsync(id);
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool GameExists(Guid id)
-        {
-            return _context.Games.Any(e => e.Id == id);
+            return (await _gameService.GetById(id)) != null;
         }
     }
 }

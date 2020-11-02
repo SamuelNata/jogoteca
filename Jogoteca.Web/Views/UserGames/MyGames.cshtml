@@ -1,0 +1,35 @@
+@model IEnumerable<Jogoteca.Models.Entities.Game>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Meus Jogos</h1>
+
+<p>
+    <a asp-action="Create">Adicionar jogo a minha lista</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Ano</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Year)
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Remover</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
