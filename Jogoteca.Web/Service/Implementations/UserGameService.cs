@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Jogoteca.Model.Exceptions;
+using Jogoteca.Models.Exceptions;
 using Jogoteca.Models.Entities;
 using Jogoteca.Repository.Interfaces;
 using Jogoteca.Service.Interfaces;
