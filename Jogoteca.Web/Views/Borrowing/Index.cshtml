@@ -1,0 +1,95 @@
+@model IEnumerable<Jogoteca.Models.DTOs.GameBorrowingDTO>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Meus emprestimos</h1>
+
+<p>
+    <a asp-action="Create">Emprestar</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Game)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Borrower)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BorrowDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpectedDevolutionDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RealDevolutionDate)
+            </th>
+            <th>
+                Status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Game)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Borrower)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BorrowDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpectedDevolutionDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RealDevolutionDate)
+                </td>
+                <td>
+                    @if(item.RealDevolutionDate.HasValue){
+                        <span class="badge badge-success">Devolvido</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning">Emprestado</span>
+                    }
+                </td>
+                <td>
+                    @if(!item.RealDevolutionDate.HasValue){
+                        <button class="btn btn-primary" onclick="markAsReturned('@item.BorrowingId')">Devolvido!</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js" integrity="sha512-DZqqY3PiOvTP9HkjIWgjO6ouCbq+dxqWoJZ/Q+zPYNHmlnI2dQnbJ5bxAHpAMw+LXRm4D72EIRXzvcHQtE8/VQ==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous"></script>
+<script>
+    function markAsReturned(id){
+        axios.post('/Borrowing/MarkAsReturned/', null, { params: { id: id } })
+            .then(function (response) {
+                console.log(response.data);
+                if(response.data.success){
+                    swal("Pronto!", response.data.message, "success");
+                    window.location.reload();
+                }
+                else
+                {
+                    swal("Ops!", response.data.message, "error");
+                }
+            }).catch(function(erro){
+                swal("Ops!", "Ocorreu um erro inesperado, tente novamente mais tarde", "error");
+                console.log(erro);
+                console.log(erro.response);
+                console.log(erro.data);
+            });
+    }
+</script>
