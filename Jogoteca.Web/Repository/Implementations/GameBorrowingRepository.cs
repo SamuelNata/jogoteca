@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using Jogoteca.Models.DTOs;
 using Npgsql;
 
-namespace Jogoteca.Web.Repository.Implementations
+namespace Jogoteca.Repository.Implementations
 {
     public class GameBorrowingRepository : GenericRepository<GameBorrowing, JogotecaDbContext>, IGameBorrowingRepository
     {

@@ -5,7 +5,7 @@ using Jogoteca.Repository.Interfaces;
 using Jogoteca.Service.Interfaces;
 using System.Threading.Tasks;
 using Jogoteca.Models.Entities;
-using Jogoteca.Web.Repository.Implementations;
+using Jogoteca.Repository.Implementations;
 using Jogoteca.Service.Implementations;
 using Jogoteca.Models.Exceptions;
 using System.Linq;
