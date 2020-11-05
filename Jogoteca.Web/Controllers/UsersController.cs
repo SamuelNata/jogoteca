@@ -104,7 +104,7 @@ namespace Jogoteca.Web.Controllers
                     dbUser.Name = user.Name;
                     await _userService.Update(dbUser);
                 }
-                catch (DbUpdateConcurrencyException e)
+                catch (DbUpdateConcurrencyException)
                 {
                     if (!await UserExists(user.Id))
                     {

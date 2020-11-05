@@ -43,23 +43,5 @@ namespace Jogoteca.Filters
 
             context.Result = result;
         }
-    
-        public async Task test()
-        {
-            // try{
-            //     var resultContext = await next();
-            // }
-            // catch(Exception e){
-            //     Controller controller = context.Controller as Controller;
-            //     if(typeof(UserFriendlyException).IsAssignableFrom(e.GetType())){
-            //         controller.ViewData["ErrorMessage"] = e.Message;
-            //     }
-            //     else
-            //     {
-            //         controller.ViewData["ErrorMessage"] = "Erro inesperado, tente novamente mais tarde ou entre em contato com o suporte";
-            //     }
-            //     context.Result = controller.RedirectToAction("Error", "Pages");
-            // }
-        }
     }
 }
