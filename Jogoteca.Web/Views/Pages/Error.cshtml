@@ -1,0 +1,10 @@
+﻿@model System.Exception
+@{
+   ViewData["Title"] = "Error";
+}
+
+<h1 class="text-danger">Ops, temos um problema!</h1>
+
+<p>@ViewBag.ErrorMessage</p>
+
+<button class="btn btn-primary" onclick="window.history.back();">Voltar</button>
