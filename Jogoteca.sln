@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogoteca.Web", "Jogoteca.Web\Jogoteca.Web.csproj", "{9CE1A010-F90E-43B7-B021-D7A5A824EA22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jogoteca.Tests", "Jogoteca.Tests\Jogoteca.Tests.csproj", "{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,17 @@ Global
 		{9CE1A010-F90E-43B7-B021-D7A5A824EA22}.Release|x64.Build.0 = Release|Any CPU
 		{9CE1A010-F90E-43B7-B021-D7A5A824EA22}.Release|x86.ActiveCfg = Release|Any CPU
 		{9CE1A010-F90E-43B7-B021-D7A5A824EA22}.Release|x86.Build.0 = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|x64.Build.0 = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Debug|x86.Build.0 = Debug|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|x64.ActiveCfg = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|x64.Build.0 = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|x86.ActiveCfg = Release|Any CPU
+		{2D121EEB-74DA-4E9F-88BD-8DC4927403AA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
