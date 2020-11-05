@@ -81,7 +81,7 @@ namespace Jogoteca.Web.Controllers
             {
                 return Json(new { success = false, message = e.Message });
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return Json(new { success = false, message = "Não foi possível devolver o jogo" });
             }

@@ -8,7 +8,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace Jogoteca.Web.Repository.Implementations
+namespace Jogoteca.Repository.Implementations
 {
     public class UserGameRepository : GenericRepository<UserGame, JogotecaDbContext>, IUserGameRepository
     {

@@ -3,7 +3,7 @@ using Jogoteca.Repository.Interfaces;
 using Jogoteca.Models.Entities;
 using Jogoteca.DbContexts;
 
-namespace Jogoteca.Web.Repository.Implementations
+namespace Jogoteca.Repository.Implementations
 {
     public class GameRepository : GenericRepository<Game, JogotecaDbContext>, IGameRepository
     {
