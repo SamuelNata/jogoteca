@@ -24,7 +24,7 @@ For this project, a architecture with layers was chosen for better responsabilit
 5. **Model Layer**: This layer has all systems modeling in terms of data, this been entities, view models, DTOs, and exceptions.
 
 <p align="center">
-  <img width="460" height="300" src="docs/architecture.png?raw=true">
+  <img height="700" src="docs/architecture.png?raw=true">
 </p>
 
 Note: From the **Services layer** on, we can move all code for a separeted project, generating a dll that can be reused. Since we have all business rules implemented, change from WEB to WEB API or create a second WEB API project would be trivial.
@@ -71,3 +71,18 @@ For internal dependencies: dotnet add reference
 For migrations: dotnet ef migrations add && dotnet ef migrations update 
 
 For Controllers and Views: dotnet aspnet-codegenerator controller -m Model && editing manualy
+
+## Modeling
+Frist a conceptual entity relational diagram was made:
+<p align="center">
+  <img height="250" src="docs/concept_ER.png?raw=true">
+</p>
+
+Then a logic entity realtional diagram:
+<p align="center">
+  <img height="300" src="docs/logical_ER.png?raw=true">
+</p>
+
+And finally the classes.
+
+
