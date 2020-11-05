@@ -23,7 +23,9 @@ For this project, a architecture with layers was chosen for better responsabilit
 4. **Repository Layer**: Responsable for all data quering and changings from DB, making easier to change the DB access technology and keeping the project organized.
 5. **Model Layer**: This layer has all systems modeling in terms of data, this been entities, view models, DTOs, and exceptions.
 
-
+<p align="center">
+  <img width="460" height="300" src="docs/architecture.png?raw=true">
+</p>
 
 Note: From the **Services layer** on, we can move all code for a separeted project, generating a dll that can be reused. Since we have all business rules implemented, change from WEB to WEB API or create a second WEB API project would be trivial.
 
